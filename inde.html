@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salary Predictor</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 50px; }
+        input, button { padding: 8px; margin: 5px; }
+        #resultBox { margin-top: 20px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h2>Predict Salary by Age</h2>
+    <input type="number" id="ageInput" placeholder="Enter Age">
+    <button onclick="predictSalary()">Predict</button>
+    <div id="resultBox"></div>
+
+    <script>
+        function predictSalary() {
+            const age = document.getElementById('ageInput').value;
+            if (!age) {
+                document.getElementById('resultBox').innerText = "Please enter an age!";
+                return;
+            }
+
+            fetch(`http://localhost:8080/predict?age=${age}`)
+                .then(response => {
+                    if (!response.ok) throw new Error("Network response not ok");
+                    return response.json();
+                })
+                .then(data => {
+                    if(data.salary !== undefined) {
+                        document.getElementById('resultBox').innerText =
+                            `Predicted Salary: ${data.salary}`;
+                    } else {
+                        document.getElementById('resultBox').innerText =
+                            "Invalid response from server";
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('resultBox').innerText = "Error fetching prediction";
+                    console.error("Fetch error:", error);
+                });
+        }
+    </script>
+</body>
+</html>
